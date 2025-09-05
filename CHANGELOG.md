@@ -6,6 +6,14 @@ All notable changes to **Theom** will be documented in this file.
 
 ---
 
+## [4.1.0] - [UNRELEASED]
+
+### Added
+
+- glone-polkit (#28)
+- autotiling support
+- bluetooth applet autostart (#29)
+
 ## [4.0.1] - 2025-08-20
 
 ### Added
