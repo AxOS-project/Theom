@@ -36,7 +36,10 @@ depends=(
   'xorg-setxkbmap'
   'xorg-xprop'
   'xdotool'
-  'xkb-switch'
+  'xkb-switch' # need build from aur
+  'xss-lock'
+  'xfce4-power-manager'
+  'i3lock'
   'theom-extras' # optional apps
   'theom-utils' # custom theom apps
 )

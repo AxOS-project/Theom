@@ -11,6 +11,7 @@ gammastep
 glib2
 gvfs
 i3-gaps
+i3lock
 jq
 libpipewire
 pamixer
@@ -28,7 +29,9 @@ ttf-firacode-nerd
 upower
 xdg-desktop-portal-gtk
 xdotool
+xfce4-power-manager
 xkb-switch
 xorg-server
 xorg-setxkbmap
 xorg-xprop
+xss-lock

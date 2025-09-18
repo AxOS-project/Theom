@@ -34,3 +34,5 @@ fi
         setxkbmap "$layouts" -option 'grp:alt_shift_toggle'
     fi
 ) &
+
+xfce4-power-manager &
