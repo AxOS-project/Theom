@@ -200,7 +200,7 @@ enter([
     poll("day", #{ interval: "20h", cmd: "date '+%d'" }),
     poll("year", #{ interval: "20h", cmd: "date '+%Y'" }),
 
-    poll("power_profile", #{ interval: "1s", cmd: "scripts/power_profiles_popup get" }),
+    poll("power_profile", #{ interval: "10s", cmd: "scripts/power_profiles_popup get" }),
     listen("is_playing", #{ initial: "false", cmd: "scripts/music" }),
 
     listen("music", #{ initial: "", cmd: "scripts/music_title" }),
@@ -292,21 +292,24 @@ enter([
             class: "profile-button " + if power_profile == "power-saver" {
                 "active"
             } else { "" },
-            onclick: "~/.config/ewwii/scripts/power_profiles_popup set power-saver && ~/.config/ewwii/scripts/power_profiles_popup popup",
+            onclick: "~/.config/ewwii/scripts/power_profiles_popup set power-saver && ~/.config/ewwii/scripts/power_profiles_popup popup && ewwii update -i power_profile=power-saver -p",
+	    timeout: "5s",
             label: "Power Saver"
         }),
         button(#{ 
             class: "profile-button " + if power_profile == "balanced" {
                 "active"
             } else { "" },
-            onclick: "~/.config/ewwii/scripts/power_profiles_popup set balanced && ~/.config/ewwii/scripts/power_profiles_popup popup",
+            onclick: "~/.config/ewwii/scripts/power_profiles_popup set balanced && ~/.config/ewwii/scripts/power_profiles_popup popup && ewwii update -i power_profile=balanced -p",
+	    timeout: "5s",
             label: "Balanced"
         }),
         button(#{ 
             class: "profile-button " + if power_profile == "performance" {
                 "active"
             } else { "" },
-            onclick: "~/.config/ewwii/scripts/power_profiles_popup set performance && ~/.config/ewwii/scripts/power_profiles_popup popup",
+            onclick: "~/.config/ewwii/scripts/power_profiles_popup set performance && ~/.config/ewwii/scripts/power_profiles_popup popup && ewwii update -i power_profile=performance -p",
+	    timeout: "5s",
             label: "Performance"
         }),
     ])),
