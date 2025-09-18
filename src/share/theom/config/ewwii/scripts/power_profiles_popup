@@ -1,0 +1,69 @@
+#!/bin/bash
+
+has_powerprofiles() {
+  gdbus call --system \
+    --dest org.freedesktop.DBus \
+    --object-path /org/freedesktop/DBus \
+    --method org.freedesktop.DBus.ListNames |
+    grep -q "net.hadess.PowerProfiles"
+}
+
+popup() {
+  STATEFILE="$XDG_RUNTIME_DIR/ewwii_power_popup_state"
+
+  if [[ -f $STATEFILE ]]; then
+    last_state=$(cat $STATEFILE)
+  else
+    last_state="closed"
+  fi
+
+  if [[ $last_state == "open" ]]; then
+    ewwii close power_popup
+    echo "closed" >$STATEFILE
+  else
+    if has_powerprofiles; then
+      ewwii open power_popup
+      echo "open" >$STATEFILE
+    fi
+  fi
+  sleep 0.2
+}
+
+get_active_profile() {
+  gdbus call --system --dest net.hadess.PowerProfiles \
+    --object-path /net/hadess/PowerProfiles \
+    --method org.freedesktop.DBus.Properties.Get \
+    net.hadess.PowerProfiles ActiveProfile 2>/dev/null |
+    sed "s/(<'//; s/'>,)//"
+}
+
+get_available_profiles() {
+  gdbus call --system --dest net.hadess.PowerProfiles \
+    --object-path /net/hadess/PowerProfiles \
+    --method org.freedesktop.DBus.Properties.Get \
+    net.hadess.PowerProfiles Profiles 2>/dev/null |
+    grep -o "'Profile': <'[^']*'" | sed "s/'Profile': <'//g" | sed "s/'//g"
+}
+
+set_profile() {
+  local profile=$1
+  gdbus call --system --dest net.hadess.PowerProfiles \
+    --object-path /net/hadess/PowerProfiles \
+    --method org.freedesktop.DBus.Properties.Set \
+    net.hadess.PowerProfiles ActiveProfile "<'$profile'>" >/dev/null 2>&1
+}
+
+case "$1" in
+"set")
+  set_profile "$2"
+  ;;
+"get")
+  get_active_profile
+  ;;
+"list")
+  get_available_profiles
+  ;;
+*)
+  popup
+  ;;
+esac

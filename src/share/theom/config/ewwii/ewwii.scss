@@ -164,8 +164,43 @@ calendar:indeterminate {
   color: #bfc9db;
 }
 
-// ----- Light theme overrides -----
+// Power profiles popup
+.power_profiles_popup {
+  background-color: $dark-bg;
+  color: $dark-text;
+  padding: 10px;
+  border-radius: 6px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
 
+.power_profiles_popup .popup-header {
+  padding: 5px;
+  margin-bottom: 5px;
+}
+
+.power_profiles_popup .popup-title {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.power_profiles_popup .profile-button {
+  padding: 5px 10px;
+  border-radius: 4px;
+  background-color: $dark-sys-tray;
+  margin: 2px 0;
+}
+
+.power_profiles_popup .profile-button.active {
+  background-color: $dark-calendar-highlight;
+  color: #fff;
+}
+
+.power_profiles_popup .profile-button:hover {
+  background-color: #d35d6e;
+  color: #fff;
+}
+
+// Light theme overrides
 .bar.light-theme {
   background-color: transparent;
   color: $light-text;
@@ -206,4 +241,23 @@ calendar:indeterminate {
 .cal.light-theme .calendar.highlight,
 .cal.light-theme calendar:selected {
   color: $dark-calendar-highlight;
+}
+
+.power_profiles_popup.light-theme {
+  background-color: $light-bg;
+  color: $light-text;
+}
+
+.power_profiles_popup.light-theme .profile-button {
+  background-color: $light-sys-tray;
+}
+
+.power_profiles_popup.light-theme .profile-button.active {
+  background-color: $light-calendar-highlight;
+  color: $light-text;
+}
+
+.power_profiles_popup.light-theme .profile-button:hover {
+  background-color: $light-calendar-highlight;
+  color: $light-text;
 }

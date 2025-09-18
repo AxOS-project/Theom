@@ -1,5 +1,5 @@
 pkgname="theom"
-pkgver=4.0.1
+pkgver=4.1.0
 pkgrel="1"
 pkgdesc="Theom desktop environement"
 arch=("x86_64")
@@ -30,9 +30,18 @@ depends=(
   'gammastep'
   'python-tomli-w'
   'autotiling'
+  'polkit-gnome'
+  'xdg-desktop-portal-gtk'
+  'glib2'
+  'xorg-setxkbmap'
+  'xorg-xprop'
+  'xdotool'
+  'xkb-switch' # need build from aur
+  'xss-lock'
+  'xfce4-power-manager'
+  'i3lock'
   'theom-extras' # optional apps
   'theom-utils' # custom theom apps
-  'polkit-gnome'
 )
 
 url="https://github.com/AxOS-project/theom"
@@ -41,6 +50,7 @@ license=('GPL')
 optdepends=(
   'plattenalbum: A GUI music player for mpd'
   'i3status: Status bar for i3wm'
+  'power-profiles-daemon: Power profiles support'
 )
 
 package() {

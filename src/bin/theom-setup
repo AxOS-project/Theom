@@ -115,12 +115,12 @@ copy_if_missing /usr/share/theom/config/polybar/modules/layout.conf ~/.config/po
 copy_if_missing /usr/share/theom/config/polybar/modules/layout.float.conf ~/.config/polybar/modules/layout.float.conf
 copy_if_missing /usr/share/theom/config/polybar/modules/layout.stuck.conf ~/.config/polybar/modules/layout.stuck.conf
 
-# EWW
-copy_if_missing /usr/share/theom/config/eww/launch.sh ~/.config/eww/launch.sh
-copy_if_missing /usr/share/theom/config/eww/eww.yuck ~/.config/eww/eww.yuck
-copy_if_missing /usr/share/theom/config/eww/eww.scss ~/.config/eww/eww.scss
-for script in calendar_popup get_theme getbattery getvol music music_title open-systray workspace; do
-  copy_if_missing "/usr/share/theom/config/eww/scripts/$script" "$HOME/.config/eww/scripts/$script"
+# EWWII
+copy_if_missing /usr/share/theom/config/ewwii/launch.sh ~/.config/ewwii/launch.sh
+copy_if_missing /usr/share/theom/config/ewwii/ewwii.rhai ~/.config/ewwii/ewwii.rhai
+copy_if_missing /usr/share/theom/config/ewwii/ewwii.scss ~/.config/ewwii/ewwii.scss
+for script in calendar_popup power_profiles_popup get_theme getbattery getvol music music_title open-systray workspace; do
+  copy_if_missing "/usr/share/theom/config/ewwii/scripts/$script" "$HOME/.config/ewwii/scripts/$script"
 done
 
 # Rofi
@@ -132,6 +132,9 @@ copy_if_missing /usr/share/theom/config/rofi/light/colors.rasi ~/.config/rofi/li
 # Flameshot
 
 copy_if_missing /usr/share/theom/config/flameshot/flameshot.ini ~/.config/flameshot/flameshot.ini
+
+# GTK XDG Portals
+copy_if_missing /usr/share/theom/config/xdg-desktop-portal/gtk-portals.conf ~/.config/xdg-desktop-portal/gtk-portals.conf
 
 # Starship
 copy_if_missing /usr/share/theom/config/starship.toml ~/.config/starship.toml

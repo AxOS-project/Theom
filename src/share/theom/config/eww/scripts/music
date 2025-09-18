@@ -1,7 +1,0 @@
-#!/bin/bash
-echo $(mpc status | grep -q playing && echo true || echo false)
-
-mpc idleloop player | while read -r; do
-    state=$(mpc status | grep -q playing && echo true || echo false)
-    echo "$state"
-done

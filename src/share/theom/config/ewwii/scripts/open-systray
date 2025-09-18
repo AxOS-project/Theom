@@ -1,0 +1,7 @@
+#!/bin/bash
+
+if pgrep -x "xfsrtray" > /dev/null; then
+    killall xfsrtray
+else
+    xfsrtray --set-to-content-size --background-color "282c34" --margin-y 60 --margin-x=-40 --position "TR" --padding 5
+fi

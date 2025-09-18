@@ -29,3 +29,4 @@ osd = false
 autoset_appconfs = true # Autoset the default configuration of apps in their config root
 enable_nightlight = false # Enables nightlight filter to protect your eyes.
 autotile = false # enable autotiling of windows
+kblayout_switch = false # enable automatically remembers and switches the keyboard layout per workspace

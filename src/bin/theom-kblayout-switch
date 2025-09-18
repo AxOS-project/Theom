@@ -1,0 +1,219 @@
+#!/usr/bin/env bash
+# i3 per-workspace keyboard layouts switcher
+
+STATE_FILE="$HOME/.cache/theom_layouts.json"
+mkdir -p "$(dirname "$STATE_FILE")"
+LAST_STATE_MTIME=0
+ENABLE_LOGS=${THEOM_LAYOUTS_LOG:-0}
+
+log() {
+    if [ "$ENABLE_LOGS" -eq 1 ]; then
+        echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" >&2
+    fi
+}
+
+get_focused_window_class() {
+    xprop -id "$(xdotool getwindowfocus)" 2>/dev/null \
+        | awk -F\" '/WM_CLASS/{print tolower($4)}'
+}
+
+# Get file mtime (seconds since epoch), 0 if missing
+get_state_mtime() {
+    [ -f "$STATE_FILE" ] && stat -c %Y "$STATE_FILE" 2>/dev/null || echo 0
+}
+
+# Get available layouts from localectl (comma-separated -> array)
+available_languages=($(localectl | grep 'X11 Layout' | awk '{print $3}' | tr ',' ' '))
+if [ ${#available_languages[@]} -eq 0 ]; then
+    log "ERROR: No X11 layouts found in localectl"
+    exit 1
+fi
+log "Available languages: ${available_languages[*]}"
+
+declare -A saved_workspaces
+
+# Find i3 socket for user 1000 (adjust if your uid != 1000)
+i3_socket=$(ls /run/user/1000/i3/ipc-socket.* 2>/dev/null)
+if [ -z "$i3_socket" ]; then
+    log "ERROR: i3 socket not found"
+    exit 1
+fi
+log "i3 socket path: $i3_socket"
+
+get_workspace() {
+    i3-msg -t get_workspaces | jq '.[] | select(.focused) | .num'
+}
+
+get_language() {
+    xkb-switch -p 2>/dev/null
+}
+
+# try to set layout using xkbswitch; return 0 on success, non-zero on failure
+set_language() {
+    local lang="$1"
+    log "Attempt to set layout -> $lang"
+    local i current
+    for i in 1 2 3; do
+        xkb-switch -s "$lang" 2>/dev/null || true
+        sleep 0.08
+        current=$(get_language)
+        if [ "$current" = "$lang" ]; then
+            log "Successfully switched to layout: $lang (attempt $i)"
+            return 0
+        fi
+    done
+
+    # Fallback: try setxkbmap
+    log "xkb-switch failed to set $lang, trying setxkbmap fallback"
+    setxkbmap "$lang" 2>/dev/null || true
+    sleep 0.12
+    current=$(get_language)
+    if [ "$current" = "$lang" ]; then
+        log "Fallback setxkbmap succeeded: $lang"
+        return 0
+    fi
+
+    log "ERROR: Unable to set layout to $lang (current: ${current:-unknown})"
+    return 1
+}
+
+save_state() {
+    local tmp
+    tmp=$(mktemp "${STATE_FILE}.XXXXXX") || {
+        log "ERROR: mktemp failed, cannot save state"
+        return 1
+    }
+
+    {
+        echo "{"
+        first=true
+        for ws in $(printf "%s\n" "${!saved_workspaces[@]}" | sort -n); do
+            $first || echo ","
+            printf '  "%s": "%s"' "$ws" "${saved_workspaces[$ws]}"
+            first=false
+        done
+        echo
+        echo "}"
+    } > "$tmp"
+
+    mv "$tmp" "$STATE_FILE"
+    LAST_STATE_MTIME=$(get_state_mtime)
+    log "State saved to $STATE_FILE (mtime: $LAST_STATE_MTIME)"
+}
+
+load_state() {
+    if [ -f "$STATE_FILE" ]; then
+        log "Loading state from $STATE_FILE"
+        # clear current map
+        for k in "${!saved_workspaces[@]}"; do
+            unset saved_workspaces[$k]
+        done
+        # populate from file
+        while IFS=$'\t' read -r k v; do
+            [ -z "$k" ] && continue
+            saved_workspaces["$k"]="$v"
+        done < <(jq -r 'to_entries[] | "\(.key)\t\(.value)"' "$STATE_FILE" 2>/dev/null)
+        LAST_STATE_MTIME=$(get_state_mtime)
+        log "State loaded (mtime: $LAST_STATE_MTIME). Workspaces: ${!saved_workspaces[*]}"
+    else
+        log "No state file found to load"
+    fi
+}
+
+# Only reload from disk if file got newer since last load/save
+reload_state_if_newer() {
+    local mtime
+    mtime=$(get_state_mtime)
+    if [ "$mtime" -gt "$LAST_STATE_MTIME" ]; then
+        log "Detected newer state file (disk mtime: $mtime > last known: $LAST_STATE_MTIME). Reloading."
+        load_state
+    fi
+}
+
+# Monitor manual layout changes and persist (with reload to avoid races)
+update_config_on_language_change() {
+    log "Starting language change monitor (xkb-switch -W)"
+    xkb-switch -W 2>/dev/null | while read -r new_layout; do
+        [ -z "$new_layout" ] && continue
+        # reload in case another process changed the file
+        reload_state_if_newer
+        ws=$(get_workspace)
+        [ -z "$ws" ] && continue
+        if [ "${saved_workspaces[$ws]}" != "$new_layout" ]; then
+            saved_workspaces[$ws]="$new_layout"
+            log "Detected manual layout change, updated workspace $ws to layout: $new_layout"
+            save_state
+        fi
+    done &
+}
+
+switch_language_on_workspace_change() {
+    local focused_workspace="$1"
+    log "Workspace focus changed to: $focused_workspace"
+
+    reload_state_if_newer
+
+    local current_layout
+    current_layout=$(get_language)
+
+    local want_layout
+    local focused_class
+    focused_class=$(get_focused_window_class)
+
+    # Workaround for https://github.com/alacritty/alacritty/issues/7688
+    case "$focused_class" in
+        alacritty|kitty)
+            want_layout="us"
+            log "Detected terminal ($focused_class) → forcing layout: us"
+            ;;
+        *)
+            want_layout="${saved_workspaces[$focused_workspace]}"
+            ;;
+    esac
+
+    if [ -z "$want_layout" ]; then
+        saved_workspaces[$focused_workspace]="$current_layout"
+        log "Initialized workspace $focused_workspace with current layout: $current_layout"
+        save_state
+        return
+    fi
+
+    if [ "$want_layout" = "$current_layout" ]; then
+        log "No layout change needed for workspace $focused_workspace (current: $current_layout)"
+        return
+    fi
+
+    log "Need to switch workspace $focused_workspace: current=$current_layout -> want=$want_layout"
+    if set_language "$want_layout"; then
+        save_state
+    else
+        new_current=$(get_language)
+        saved_workspaces[$focused_workspace]="$new_current"
+        log "Failed to enforce wanted layout. Recorded $new_current"
+        save_state
+    fi
+}
+
+load_state
+
+# initialize current workspace if missing
+ws_now=$(get_workspace)
+if [ -n "$ws_now" ]; then
+    if [ -z "${saved_workspaces[$ws_now]}" ]; then
+        saved_workspaces[$ws_now]=$(get_language)
+        log "Startup: initialized workspace $ws_now with layout ${saved_workspaces[$ws_now]}"
+        save_state
+    fi
+fi
+
+update_config_on_language_change
+
+log "Subscribing to i3 workspace events"
+i3-msg -t subscribe -m '[ "workspace" ]' --socket="$i3_socket" | while read -r data; do
+    [ -z "$data" ] && continue
+    event=$(echo "$data" | jq -r '.change' 2>/dev/null)
+    [ "$event" != "focus" ] && continue
+    focused_workspace=$(echo "$data" | jq -r '.current.num' 2>/dev/null)
+    [ -z "$focused_workspace" ] && continue
+    switch_language_on_workspace_change "$focused_workspace"
+done

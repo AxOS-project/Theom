@@ -1,7 +1,0 @@
-#!/bin/sh
-
-if output=$(theom-config appearance.theme 2>/dev/null); then
-  echo "$output"
-else
-  echo "dark"
-fi

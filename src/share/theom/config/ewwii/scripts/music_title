@@ -1,5 +1,10 @@
 #!/bin/bash
 
+until mpc status >/dev/null 2>&1; do
+  echo "Waiting for MPD..."
+  sleep 0.1
+done
+
 print_title() {
   local title
   title=$(mpc current)

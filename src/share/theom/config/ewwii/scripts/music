@@ -1,0 +1,13 @@
+#!/bin/bash
+
+until mpc status >/dev/null 2>&1; do
+  echo "Waiting for MPD..."
+  sleep 0.1
+done
+
+echo $(mpc status | grep -q playing && echo true || echo false)
+
+mpc idleloop player | while read -r; do
+  state=$(mpc status | grep -q playing && echo true || echo false)
+  echo "$state"
+done
