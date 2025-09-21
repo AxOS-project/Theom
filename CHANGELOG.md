@@ -13,6 +13,11 @@ All notable changes to **Theom** will be documented in this file.
 - glone-polkit (#28)
 - autotiling support
 - bluetooth applet autostart (#29)
+- keyboard layout switch binary
+
+### Changed
+
+- `use_eww` under `[bar]` to `use_bar` which can take either "ewwii" or "polybar" in `config.toml`.
 
 ## [4.0.1] - 2025-08-20
 

@@ -6,6 +6,7 @@ brightnessctl
 conky
 dunst
 eww
+ewwii
 feh
 gammastep
 glib2

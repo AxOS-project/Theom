@@ -37,6 +37,7 @@ depends=(
   'xorg-xprop'
   'xdotool'
   'xkb-switch' # need build from aur
+  'ewwii' # needed from aur
   'xss-lock'
   'xfce4-power-manager'
   'i3lock'
