@@ -1,8 +1,8 @@
 #!/bin/bash
-use_eww=$(theom-config bar.use_eww | tr -d '[:space:]')
+use_bar=$(theom-config bar.use_bar | tr -d '[:space:]')
 
-if [ "$use_eww" = "true" ]; then
+if [ "$use_bar" = "ewwii" ]; then
     ~/.config/ewwii/launch.sh
-elif [ "$use_eww" = "false" ]; then
+elif [ "$use_bar" = "polybar" ]; then
     ~/.config/polybar/launch.sh
 fi

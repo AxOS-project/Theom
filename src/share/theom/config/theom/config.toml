@@ -7,8 +7,8 @@ theme = "dark"
 wallpaper = "/usr/share/backgrounds/theom/mountains.jpg"
 
 [bar]
+use_bar = "ewwii" # ewwii | polybar
 polybar_layout = "float"
-use_eww = true
 
 [widgets]
 enable_widgets = true
@@ -28,5 +28,5 @@ osd = false
 [functions]
 autoset_appconfs = true # Autoset the default configuration of apps in their config root
 enable_nightlight = false # Enables nightlight filter to protect your eyes.
-autotile = false # enable autotiling of windows
-kblayout_switch = false # enable automatically remembers and switches the keyboard layout per workspace
+autotile = false # Enable autotiling of windows
+kblayout_switch = false # Enable keyboard layout switch

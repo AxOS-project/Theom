@@ -1,4 +1,4 @@
-.TH theom 5 "June 2025" "4.0.0" "Theom Configuration Manual"
+.TH theom 5 "June 2025" "4.1.0" "Theom Configuration Manual"
 
 .SH NAME
 theom \- configuration guide for the Theom desktop environment
@@ -47,13 +47,13 @@ Controls the bar (dock/panel) system.
 Layout used by Polybar. Default: \fBstuck\fR
 
 .TP
-\fBuse_eww\fR
-Boolean. If true, uses Eww for widgets/bar (recommended).
+\fBuse_bar\fR
+The bar to use. Options: ewwii (recommended), polybar.
 
 .EX
 [bar]
 polybar_layout = "stuck"
-use_eww = true
+use_bar = "ewwii"
 .EE
 
 .SS [widgets]

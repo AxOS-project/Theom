@@ -7,8 +7,8 @@ theme = "dark"
 wallpaper = "/usr/share/backgrounds/theom/forest.jpg"
 
 [bar]
+use_bar = "ewwii"
 polybar_layout = "stuck"
-use_eww = true
 
 [widgets]
 enable_widgets = true

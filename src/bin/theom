@@ -2,7 +2,7 @@
 
 set -e
 
-VERSION="4.0.0"
+VERSION="4.1.0"
 CONFIG_DIR="$HOME/.config/theom"
 CORE_BINS=("/usr/bin/theom-config" "/usr/bin/theom-setup" "/usr/bin/tcomp-gen")
 
