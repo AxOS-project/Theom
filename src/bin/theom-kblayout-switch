@@ -4,12 +4,20 @@
 STATE_FILE="$HOME/.cache/theom_layouts.json"
 mkdir -p "$(dirname "$STATE_FILE")"
 LAST_STATE_MTIME=0
-ENABLE_LOGS=${THEOM_LAYOUTS_LOG:-0}
+
+LOGDIR="$HOME/.local/state/theom/logs"
+LOGFILE="$LOGDIR/theom_layout_switcher.log"
+MAXSIZE=51200 # 50 KB
+
+mkdir -p "$LOGDIR"
+
+# Emptying if too large
+if [ -f "$LOGFILE" ] && [ "$(stat -c%s "$LOGFILE")" -gt "$MAXSIZE" ]; then
+  : >"$LOGFILE"
+fi
 
 log() {
-    if [ "$ENABLE_LOGS" -eq 1 ]; then
-        echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" >&2
-    fi
+  echo "[$(date '+%F %T')] $*" >>"$LOGFILE"
 }
 
 get_focused_window_class() {
@@ -25,7 +33,9 @@ get_state_mtime() {
 # Get available layouts from localectl (comma-separated -> array)
 available_languages=($(localectl | grep 'X11 Layout' | awk '{print $3}' | tr ',' ' '))
 if [ ${#available_languages[@]} -eq 0 ]; then
-    log "ERROR: No X11 layouts found in localectl"
+    local ERROR_MSG="ERROR: No X11 layouts found in localectl"
+    echo "$ERROR_MSG"
+    log "$ERROR_MSG"
     exit 1
 fi
 log "Available languages: ${available_languages[*]}"
@@ -33,9 +43,11 @@ log "Available languages: ${available_languages[*]}"
 declare -A saved_workspaces
 
 # Find i3 socket for user 1000 (adjust if your uid != 1000)
-i3_socket=$(ls /run/user/1000/i3/ipc-socket.* 2>/dev/null)
+i3_socket=$(ls "$XDG_RUNTIME_DIR"/i3/ipc-socket.* 2>/dev/null)
 if [ -z "$i3_socket" ]; then
-    log "ERROR: i3 socket not found"
+    local ERROR_MSG="ERROR: i3 socket not found"
+    echo "$ERROR_MSG"
+    log "$ERROR_MSG"
     exit 1
 fi
 log "i3 socket path: $i3_socket"
@@ -73,14 +85,18 @@ set_language() {
         return 0
     fi
 
-    log "ERROR: Unable to set layout to $lang (current: ${current:-unknown})"
+    local ERROR_MSG="ERROR: Unable to set layout to $lang (current: ${current:-unknown})"
+    echo "$ERROR_MSG"
+    log "$ERROR_MSG"
     return 1
 }
 
 save_state() {
     local tmp
     tmp=$(mktemp "${STATE_FILE}.XXXXXX") || {
-        log "ERROR: mktemp failed, cannot save state"
+        local ERROR_MSG="ERROR: mktemp failed, cannot save state"
+    	echo "$ERROR_MSG"
+	log "$ERROR_MSG"
         return 1
     }
 
