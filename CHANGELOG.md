@@ -6,7 +6,7 @@ All notable changes to **Theom** will be documented in this file.
 
 ---
 
-## [4.1.0] - [UNRELEASED]
+## [4.1.0] - 2025-09-22
 
 ### Added
 
