@@ -3,8 +3,8 @@
 # Only tweak the values, changing the key names or removing them may result in any unnecessary bugs or errors.
 
 [appearance]
-theme = "dark"
-wallpaper = "/usr/share/backgrounds/theom/mountains.jpg"
+theme = "light"
+wallpaper = "/usr/share/backgrounds/theom/natures-mountain-waters.jpg"
 
 [bar]
 use_bar = "ewwii" # ewwii | polybar

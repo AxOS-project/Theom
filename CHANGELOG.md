@@ -19,6 +19,8 @@ All notable changes to **Theom** will be documented in this file.
 ### Changed
 
 - `use_eww` under `[bar]` to `use_bar` which can take either "ewwii" or "polybar" in `config.toml`.
+- New default wallpaper (`natures-mountain-waters.jpg`).
+- New default theme (`light`).
 
 ## [4.0.1] - 2025-08-20
 
