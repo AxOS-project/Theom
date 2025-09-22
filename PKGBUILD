@@ -7,6 +7,7 @@ depends=(
   'xorg-server'
   'pipewire-pulse'
   'brightnessctl'
+  'ddcutil'
   'picom'
   'i3-gaps'
   'polybar'

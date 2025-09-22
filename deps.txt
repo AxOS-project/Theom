@@ -4,6 +4,7 @@ alsa-utils
 autotiling
 brightnessctl
 conky
+ddcutil
 dunst
 eww
 ewwii

@@ -13,7 +13,8 @@ All notable changes to **Theom** will be documented in this file.
 - glone-polkit (#28)
 - autotiling support
 - bluetooth applet autostart (#29)
-- keyboard layout switch binary
+- `theom-kblayout-switch` binary for switching kblayout (#40)
+- `theom-brightness-mgr` binary with brightnessctl and ddcutil support.
 
 ### Changed
 

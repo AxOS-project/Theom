@@ -1,0 +1,71 @@
+#!/bin/bash
+
+LOGDIR="$HOME/.local/state/theom/logs"
+LOGFILE="$LOGDIR/theom_brightness_mgr.log"
+MAXSIZE=51200 # 50 KB
+
+mkdir -p "$LOGDIR"
+
+# Empty log if too large
+if [ -f "$LOGFILE" ] && [ "$(stat -c%s "$LOGFILE")" -gt "$MAXSIZE" ]; then
+    : >"$LOGFILE"
+fi
+
+echo_and_log() {
+    local msg="[$(date '+%F %T')] $*"
+    echo "$msg"
+    echo "$msg" >>"$LOGFILE"
+}
+
+check_2nd_arg() {
+    if [[ -z "$2" ]]; then
+        echo_and_log "Second argument is missing for $1"
+        exit 1
+    fi
+}
+
+use_ddcutil() {
+    local op="$1" val="$2"
+    local found=0
+
+    for disp in $(ddcutil detect | awk '/Display/ {print $2}'); do
+        if ddcutil capabilities --display "$disp" | grep -q "Feature: 10 "; then
+            echo_and_log "[INFO] Using ddcutil (display $disp) to set brightness"
+            ddcutil setvcp 10 "$op$val" --display "$disp"
+            found=1
+        fi
+    done
+
+    if [[ $found -eq 0 ]]; then
+        echo_and_log "[WARN] No DDC/CI capable display with brightness control found"
+        return 1
+    fi
+    return 0
+}
+
+case $1 in
+    --increase|-i)
+        check_2nd_arg "increase" "$2"
+        if [[ -d "/sys/class/backlight" ]]; then
+            echo_and_log "[INFO] Using brightnessctl"
+            brightnessctl set +"$2"%
+        else
+            echo_and_log "[WARN] brightnessctl unavailable, trying ddcutil..."
+            use_ddcutil "+" "$2" || echo_and_log "[ERROR] Could not adjust brightness"
+        fi
+        ;;
+    --decrease|-d)
+        check_2nd_arg "decrease" "$2"
+        if [[ -d "/sys/class/backlight" ]]; then
+            echo_and_log "[INFO] Using brightnessctl"
+            brightnessctl set "$2"-% 
+        else
+            echo_and_log "[WARN] brightnessctl unavailable, trying ddcutil..."
+            use_ddcutil "-" "$2" || echo_and_log "[ERROR] Could not adjust brightness"
+        fi
+        ;;
+    *)
+        echo_and_log "Usage: $0 --increase|-i <value> | --decrease|-d <value>"
+        exit 1
+        ;;
+esac
