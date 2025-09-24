@@ -62,7 +62,14 @@ package() {
     cp -r "$srcdir/bin" "$pkgdir/usr/"
     cp -r "$srcdir/share/." "$pkgdir/usr/share/"
 
-    install -Dm644 "$srcdir/share/xsessions/theom.desktop" "$pkgdir/usr/share/xsessions/theom.desktop"
+    # Install to _theom.desktop to ensure it comes at the top.
+    #
+    # Why make it come at the top of greeter? 
+    #
+    # Well... users doesn't even look at what session they are launching. 
+    # So, we need to do a trick to ensure theom comes at the top. 
+    # Or else, theom will get blamed for the users mistake.
+    install -Dm644 "$srcdir/share/xsessions/theom.desktop" "$pkgdir/usr/share/xsessions/_theom.desktop"
 
     install -Dm644 "$srcdir/share/theom/themes/fonts/feather.ttf" \
     "$pkgdir/usr/share/fonts/theom/feather.ttf"
