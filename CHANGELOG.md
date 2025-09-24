@@ -6,6 +6,12 @@ All notable changes to **Theom** will be documented in this file.
 
 ---
 
+## [4.1.1] - 2025-09-24
+
+### Added
+
+- `i3status` to dependencies.
+
 ## [4.1.0] - 2025-09-22
 
 ### Added
