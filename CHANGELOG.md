@@ -6,6 +6,16 @@ All notable changes to **Theom** will be documented in this file.
 
 ---
 
+## [4.0.2] - 2025-09-24
+
+### Changed
+
+- Install script to install the `theom.desktop` file to `_theom.desktop`.
+
+### Removed
+
+- Few wallpapers which didn't match Theom well.
+
 ## [4.1.1] - 2025-09-24
 
 ### Added
