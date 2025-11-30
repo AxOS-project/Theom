@@ -14,6 +14,7 @@ glib2
 gvfs
 i3-gaps
 i3lock
+i3status
 jq
 libpipewire
 pamixer
@@ -37,3 +38,4 @@ xorg-server
 xorg-setxkbmap
 xorg-xprop
 xss-lock
+zenity

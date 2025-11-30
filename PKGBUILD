@@ -1,5 +1,5 @@
 pkgname="theom"
-pkgver=4.1.2
+pkgver=4.1.3
 pkgrel="1"
 pkgdesc="Theom desktop environement"
 arch=("x86_64")
@@ -7,6 +7,7 @@ depends=(
   'xorg-server'
   'pipewire-pulse'
   'brightnessctl'
+  'zenity'
   'ddcutil'
   'picom'
   'i3-gaps'
